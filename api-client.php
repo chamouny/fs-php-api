@@ -10,8 +10,8 @@ namespace FormSynergy;
  * Take a quick look at the example-setup-php directory, this basic example can be improved to best fit your needs.
  *
  * @author     Joseph G. Chamoun <joe@FormSynergy.com>
- * @copyright  2018 FormSynergy.
- * @licence    https://github.com/formsynergy/php-api/blob/master/licence.txt MIT
+ * @copyright  2019 FormSynergy.com
+ * @licence    https://github.com/form-synergy/php-api/blob/dev-master/LICENSE MIT
  */
 
 /**
