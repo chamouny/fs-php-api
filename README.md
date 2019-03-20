@@ -44,10 +44,7 @@ FS::Config([
     'endpoint' => 'api.formsynergy.com',
     'apikey' => $apikey,
     'secretkey' => $secretkey,
-    /**
-     * If you are a reseller
-     * 'resellerid' => $resellerid,
-     **/
+     //'resellerid' => $resellerid,  If you are a reseller
     'max_auth_count' => 15,
 ]);
 ```
