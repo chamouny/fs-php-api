@@ -52,12 +52,13 @@ FS::Config([
 ]);
 ```
 
-## Enable local storage to store downloads and responses. 
+## local storage
+Enable local storage to store downloads and responses. 
 ```PHP
 FS::Storage( PROJECT_DIR, 'local-storage' );
 ```
 
-## Load account profile
+## Load account
 To start managing an account, load the account in question by providing the profile id.
 ```PHP
 $api = FS::Api()->Load($profileid);
