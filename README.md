@@ -22,29 +22,32 @@ require '/vendor/autoload.php';
 use \FormSynergy\Init as FS;
 ```
 
+You will need to retrieve your credentials in the Form Synergy console.
 
-## Configuration
-You will need to retrieve:
-* Profile ID
-* API Key
-* API Secret
+Console Access: https://formsynergy.com/console/
+
+$profileid = '';
+$apikey = '';
+$apisecret = '';
 
 If you are a reseller
-* Reseller ID
-
-To retrieve your credentials, you will need to sign to the Form Synergy Console: https://formsynergy.com/console/
-
-To register a new account: https://formsynergy.com/register/
+$resellerid = '';
 
 
 
+
+## Configuration
 ```PHP
 FS::Config([
     'version' => 'v1',
     'protocol' => 'https',
     'endpoint' => 'api.formsynergy.com',
-    'apikey' => '...',
-    'secretkey' => '...',
+    'apikey' => $apikey,
+    'secretkey' => $secretkey,
+    /**
+     * If you are a reseller
+    'resellerid' => $resellerid,
+     **/
     'max_auth_count' => 15,
 ]);
 ```
@@ -55,7 +58,9 @@ FS::Storage( PROJECT_DIR, 'local-storage' );
 ```
 
 ## Load account profile
-
+To start managing an account, load the account in question by providing the profile id.
 ```PHP
-$api = FS::Api()->Load('...');
+$api = FS::Api()->Load($profileid);
 ```
+## Features
+ 
