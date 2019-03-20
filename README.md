@@ -26,12 +26,12 @@ You will need to retrieve your credentials in the Form Synergy console.
 
 Console Access: https://formsynergy.com/console/
 
-$profileid = '';
-$apikey = '';
-$apisecret = '';
+- $profileid = '';
+- $apikey = '';
+- $apisecret = '';
 
 If you are a reseller
-$resellerid = '';
+- $resellerid = '';
 
 
 
