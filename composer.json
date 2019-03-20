@@ -1,15 +1,13 @@
 {
     "name": "form-synergy/php-api",
     "description": "Form Synergy API client.",
+    "type": "library",
     "license": "MIT",
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/form-synergy/php-api"
-        }
-    ],
+    "authors": [{
+        "name": "Joseph Chamoun",
+        "email": "joseph@formsynergy.com"
+    }],
     "require": {
-        "form-synergy/php-api": "dev-master",
         "guzzlehttp/guzzle": "~6.0"
     }
 }
