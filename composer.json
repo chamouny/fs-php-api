@@ -1,6 +1,12 @@
 {
     "version": "1.0.2",
     "name": "form-synergy/php-api",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/form-synergy/php-api"
+        }
+    ],
     "require": {
         "form-synergy/php-api": "dev-master",
         "guzzlehttp/guzzle": "~6.0"
