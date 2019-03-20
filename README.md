@@ -46,7 +46,7 @@ FS::Config([
     'secretkey' => $secretkey,
     /**
      * If you are a reseller
-    'resellerid' => $resellerid,
+     * 'resellerid' => $resellerid,
      **/
     'max_auth_count' => 15,
 ]);
