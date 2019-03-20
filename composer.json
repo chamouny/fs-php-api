@@ -2,12 +2,6 @@
     "name": "form-synergy/php-api",
     "description": "Form Synergy API client.",
     "license": "MIT",
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/form-synergy/php-api"
-        }
-    ],
     "require": {
         "guzzlehttp/guzzle": "~6.0"
     },
