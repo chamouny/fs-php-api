@@ -1,33 +1,46 @@
-# php-api
-FormSynergy.com API PHP library
+# FormSynergy.com API PHP library
 
+A PHP library to manage Form Synergy services.
+
+## Install using composer
+```bash
 require '/vendor/autoload.php';
+```
 
+##  Enable session management
+```PHP
 \FormSynergy\Session::enable();
+```
+
+## Initialize FormSynergy class
+```PHP
 use \FormSynergy\Init as FS;
-/**
- * You will need to provide the following in order to establish a connection.
- * - Profile ID
- * - API Key
- * - Secret Key
- * If you are a reseller you should include the
- * - Reseller ID
- *
- * Add credentials to configuration
- */
+```
+
+
+## Configuration
+In order to establish a successful connection, update the configuration.
+* Profile ID
+* API Key
+* API Secret
+If you are a reseller
+* Reseller ID
+
+```PHP
 FS::Config([
     'version' => 'v1',
     'protocol' => 'https',
     'endpoint' => 'api.formsynergy.com',
-    'apikey' => $apikey,
-    'secretkey' => $secret,
+    'apikey' => '<apikey>',
+    'secretkey' => '<apisecret>',
     'max_auth_count' => 15,
 ]);
-/**
- * Create a local storage directory, to store downloads.
- */
+```
+## Create a local storage directory, to store downloads
+```PHP
 FS::Storage( PROJECT_DIR, 'local-storage' );
-/**
- * Resellers simply change the profile id to manage different accounts.
- */
-$api = FS::Api()->Load($profileid);
+```
+## Load account profile
+```PHP
+$api = FS::Api()->Load('<profileid>');
+```
