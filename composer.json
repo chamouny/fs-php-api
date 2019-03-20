@@ -3,13 +3,6 @@
     "version": "1.0.2",
     "name": "form-synergy/php-api",
     "description": "Form Synergy API client.",
-    "keywords": ["forms","strategies","behaviors","interactions","web","leads"],
-    "homepage": "https://formsynergy.com",
-    "authors": [{
-        "name": "Joseph Chamoun",
-        "email": "joseph@formsynergy.com"
-    }],
-    "support": "https://formsynergy.com/issues/",
     "license": "MIT",
     "repositories": [
         {
