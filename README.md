@@ -52,7 +52,7 @@ FS::Config([
 ## local storage
 Enable local storage to store downloads and responses. 
 ```PHP
-FS::Storage( PROJECT_DIR, 'local-storage' );
+FS::Storage( '/', 'local-storage' );
 ```
 
 ## Load account
