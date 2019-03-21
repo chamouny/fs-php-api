@@ -99,7 +99,7 @@ $api->Create('strategy')
 
 
 ## Creating modules
-Modules are bundles composed of a subject, body and form inputs. Each module can be customized to handle events and responses individually. Modules can be chain linked together to create feature rich interactions. <a href="https://formsynergy.com/documentation/modules/">API documentation</a>
+Modules are bundles composed of a subject, body and form inputs. Each module can be customized to handle events and responses individually. Modules can be chain linked together to create contiuous interactions. <a href="https://formsynergy.com/documentation/modules/">API documentation</a>
 
 
 
