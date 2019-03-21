@@ -17,9 +17,9 @@ require '/vendor/autoload.php';
 \FormSynergy\Session::enable();
 ```
 
-## Import the FormSynergy class
+## Import the Form Synergy class
 ```PHP
-use \FormSynergy\Init as FS;
+use \FormSynergy\Fs as FS;
 ```
 
 You will need to retrieve your credentials in the Form Synergy console.
@@ -56,9 +56,52 @@ FS::Storage( '/', 'local-storage' );
 ```
 
 ## Load account
-To start managing an account, load the account in question by providing the profile id.
+Load and start managing an account.
 ```PHP
 $api = FS::Api()->Load($profileid);
 ```
-## Features
- 
+## Add a domain
+
+```PHP
+// Adding a website
+$api->Create('website')
+    ->Attributes([
+        'name' => 'MyWebsite',
+        'domain' => 'example.website.ltd',
+        'proto' => 'https'
+    ])
+    ->As('website');
+```
+```PHP
+// Next verify domain ownership, with a meta tag.
+
+// Add the meta tag
+<meta name="FS:siteid" content="<?php echo $api->_website('siteid');?>">
+
+// Create a verification request
+$api->Get('website')
+    ->Where([
+        'siteid' => $api->_website('siteid')
+    ])
+    ->verify();
+```    
+
+## Create a strategy
+A strategy is composed of modules and objectives.
+```PHP
+$api->Create('strategy')
+    ->Attributes([
+        'name' => 'Default strategy',
+        'siteid' => $api->_website('siteid')
+    ])
+    ->As('defaultStrategy');
+```
+
+
+## Creating modules
+Modules are bundles composed of a subject, body and form inputs. Each module can be customized to handle events and responses individually. Most important, modules can be chain linked together, to form and function as on large module.
+
+
+
+## Create an objective
+An objective allows you to define notification methods, and goals based on obtained information. 
