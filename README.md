@@ -99,9 +99,9 @@ $api->Create('strategy')
 
 
 ## Creating modules
-Modules are bundles composed of a subject, body and form inputs. Each module can be customized to handle events and responses individually. Most important, modules can be chain linked together, to form and function as on large module.
+Modules are bundles composed of a subject, body and form inputs. Each module can be customized to handle events and responses individually. Modules can be chain linked together to create feature rich interactions. <a href="https://formsynergy.com/documentation/modules/">API documentation</a>
 
 
 
 ## Create an objective
-An objective allows you to define notification methods, and goals based on obtained information. 
+An objective allows you to define notification methods, and goals based on obtained information. <a href="https://formsynergy.com/documentation/objectives/">API documentation</a>
