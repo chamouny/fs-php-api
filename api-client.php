@@ -1006,7 +1006,7 @@ class Client
     }
 }
 
-class Init
+class Fs
 {
 
     public static $config;
