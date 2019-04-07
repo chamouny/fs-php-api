@@ -3,7 +3,7 @@
     "description": "Form Synergy API client.",
     "license": "MIT",
     "require": {
-        php": ">=7.0",
+        "php": ">=7.0",
         "guzzlehttp/guzzle": "~6.0"
     },
     "replace": {
