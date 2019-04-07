@@ -18,7 +18,7 @@ namespace FormSynergy;
  *
  * Form Synergy Client Class
  *
- * @version 1.0.0
+ * @version 1.2
  */
 class Fs
 {
