@@ -20,7 +20,7 @@ namespace FormSynergy;
  *
  * @version 1.0.0
  */
-class Client
+class Fs
 {
 
     /**
@@ -1006,7 +1006,7 @@ class Client
     }
 }
 
-class Init
+class Fs
 {
 
     public static $config;
@@ -1064,6 +1064,28 @@ class Init
             self::Error('Store', 'Unable to write in ' . self::$storage . ' directory! Local storage is disabled.');
             self::$storage = false;
         }
+    }
+    
+    public static function Resources($data = []) {
+
+        if( empty($data) ) {
+            if( file_exists( self::$storage . '/fs-installed-resources.json' )) {
+                self::$data = json_decode( file_get_contents( self::$storage . '/fs-installed-resources.json' ), true );
+            }
+        }
+        else {
+            self::Store('fs-installed-resources', 'json', json_encode($data));
+        }
+        return self;
+    }
+
+    public static function Get( $key, $id = null ) 
+    {
+        if(self::$data) {
+            $package = isset(self::$data[$key]) ? self::$data[$key] : false;
+            return !is_null($id) && $package && isset($package[$id]) ? true : is_null($id) && $package ? true :false;
+        }
+        return false;
     }
 
     public static function Store($name, $type, $data = null)
