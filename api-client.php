@@ -20,7 +20,7 @@ namespace FormSynergy;
  *
  * @version 1.2
  */
-class Fs
+class Client
 {
 
     /**
