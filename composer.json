@@ -1,13 +1,15 @@
 {
     "name": "form-synergy/php-api",
     "description": "Form Synergy API client.",
-    "type": "library",
     "license": "MIT",
-    "authors": [{
-        "name": "Joseph Chamoun",
-        "email": "joseph@formsynergy.com"
-    }],
     "require": {
+        "php": ">=7.0",
         "guzzlehttp/guzzle": "~6.0"
+    },
+    "replace": {
+        "form-synergy/php-api": "self.version"
+    },
+    "autoload": {
+	"files": ["api-client.php"]
     }
 }
