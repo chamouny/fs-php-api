@@ -1,7 +1,23 @@
 {
     "name": "form-synergy/php-api",
     "description": "Form Synergy API client.",
+    "keywords": [
+        "client",
+        "form",
+        "synergy",
+        "web strategy",
+        "objectives",
+        "interactions",
+        "user experience",
+        "intervene"
+    ],
+    "homepage": "https://formsynergy.com/",
     "license": "MIT",
+    "authors": [{
+        "name": "Joseph G Chamoun",
+        "email": "formsynergy@gmail.coom",
+        "homepage": "https://github.com/form-synergy"
+    }],
     "require": {
         "php": ">=7.0",
         "guzzlehttp/guzzle": "~6.0"
@@ -10,6 +26,6 @@
         "form-synergy/php-api": "self.version"
     },
     "autoload": {
-	"files": ["api-client.php"]
+        "files": ["src/api-client.php"]
     }
 }
