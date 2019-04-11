@@ -18,7 +18,7 @@ namespace FormSynergy;
  *
  * Form Synergy Client Class
  *
- * @version 1.3.6
+ * @version 1.3.6.1
  */
 class Client
 {
