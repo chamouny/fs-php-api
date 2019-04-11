@@ -15,10 +15,276 @@ namespace FormSynergy;
  */
 
 /**
- *
+ * Fs class
+ * 
+ * @version 1.3.6.3
+ * 
+ */
+class Fs
+{
+    /**
+	 * FormSynergy version constant.
+	 */
+	const FORMSYNERGY_VERSION = '1.3.6.3';
+
+    /**
+     * self::$config 
+     * 
+     * Contains the necessary keys to gain access to the API service.
+     * 
+     * 
+     * @visibility public static
+     * @var array $config
+     */
+    public static $config;
+
+    /**
+     * self::$resellerid
+     * 
+     * Enables management over multiple accounts.
+     * 
+     * 
+     * @visibility public static
+     * @var string $resellerid
+     */
+    public static $resellerid;
+
+    /**
+     * self::$profileid
+     * 
+     * Unique identifier for an account or profile.
+     * 
+     * 
+     * @visibility public static
+     * @var string $profileid
+     */
+    public static $profileid;
+
+    /**
+     * self::$storage
+     * 
+     * Directory to store details regarding resources.
+     * 
+     * 
+     * @visibility public static
+     * @var sting $storage
+     */
+    public static $storage;
+
+    /**
+     * Resellerid()
+     * Load the reseller account, in order to manage multiple profiles.
+     * 
+     * 
+     * @visibility public static
+     * @uses self::$resellerid
+     * @returns void
+     */
+    public static function Reseller($resellerid = null)
+    {
+        if( !self::$resellerid && is_null($resellerid)) {
+            throw new FsException('In order to return the reseller id, it must be defined first.');
+        }
+        if(!is_null($resellerid)) {
+            self::$resellerid = $resellerid;
+        }
+        return self::$resellerid;
+    }
+
+    /**
+     * Load()
+     * 
+     * Load the profile, a new profile id can be set to load an different account.
+     * 
+     * 
+     * @visibility public static
+     * @uses self::$profileid
+     * @returns void
+     */
+    public static function Load($profileid = null)
+    {
+        if( !self::$profileid && is_null($profileid)) {
+            throw new FsException('In order to return the profile id, it must be defined first.');
+        }
+        if(!is_null($profileid)) {
+            self::$profileid = $profileid;
+        }
+        return self::$profileid;
+    }
+    
+    /**
+     * Config()
+     * 
+     * API configuration
+     * 
+     * 
+     * @visibility public static
+     * @uses self::$config
+     * @returns void
+     */
+    public static function Config($config = null)
+    {
+        if( !self::$config && is_null($config)) {
+            throw new FsException('In order to return configuration variables, they myst be defined first.');
+        }
+        if(!is_null($config)) {
+            self::$config = $config;
+        }
+        return self::$config;
+    }
+
+    /**
+     * Storage()
+     * 
+     * Will set the default storage.
+     * 
+     * 
+     * @visibility public static
+     * @uses is_dir()
+     * @uses mkdir()
+     * @uses file_exists()
+     * @uses rtrim()
+     * @uses FsException()
+     * @uses self::$storage
+     * @param string $path
+     * @param string $dir
+     * @return string
+     */
+    public static function Storage($path, $dir)
+    {
+        is_dir($path . '/' . $dir) || mkdir($path . '/' . $dir);
+        if (is_writable($path . '/' . $dir)) {
+            self::$storage = rtrim($path . '/' . $dir, '/');
+        }
+        else if(file_exists($path . '/' . $dir)) {
+            self::$storage = rtrim($path . '/' . $dir, '/');
+        } else {
+            self::$storage = false;
+        }
+    }
+
+    /**
+     * Includes()
+     * 
+     * Helper method to check if a needle exists in a haystack.
+     * 
+     * 
+     * @visibility public static
+     * @uses strpos()
+     * @uses strtolower()
+     * @returns bool
+     */
+    public static function Includes($needle, $haystack)
+    {
+        if (!$haystack) {
+            return false;
+        }
+        if (!$needle) {
+            return false;
+        }
+        $return = (strpos(strtolower($haystack), strtolower($needle)) !== false) ? true : false;
+        return $return;
+    }
+
+    /**
+     * Resources()
+     * 
+     * Will instantiate the Resource class through static method
+     * 
+     * 
+     * @visibility public static
+     * @see class Resources
+     * @param string $package
+     * @returns object $resource
+     */
+    public static function Resource($package)
+    {
+        $resource = new Resource($package, self::$storage);
+        return $resource;
+    }
+
+    /**
+     * Get()
+     * 
+     * This method will be deprecated soon, since introduction of the class Resource.
+     * 
+     * 
+     * @visibility public static
+     * @param string $key
+     * @param string $id
+     * @uses self::Resources()
+     * @uses isset()
+     * @uses is_null()
+     * @uses self::$data
+     * @returns array
+     */
+    public static function Get($key, $id = null)
+    {
+        if (!self::$data) {
+            self::Resources();
+        }
+
+        if (self::$data) {
+            $package = isset(self::$data[$key]) ? self::$data[$key] : false;
+            return !is_null($id) && $package && isset($package[$id]) ? true : is_null($id) && $package ? true : false;
+        }
+        return false;
+    }
+ 
+
+    /**
+     * Api()
+     * 
+     * Will instantiate the API.
+     * 
+     * 
+     * @visibility public static
+     * @see class Client
+     * @uses isset()
+     * @uses Client::Config()
+     * @uses Client::Reseller()
+     * @uses Client::Load()
+     * @return object
+     */
+    public static function Api()
+    {
+        try {
+            $api = new Client();
+            $api->Config(self::$config);
+    
+            if (isset(self::$resesslerid)) {
+                $api->Reseller(self::$resellerid);
+            }
+    
+            if (isset(self::$profileid)) {
+                $api->Load(self::$profileid);
+            }
+            return $api;
+        }
+        catch(FsException $e) {
+            echo $e->getMessage();
+        }
+    }
+
+    /**
+	 * Returns the FormSynergy version string.
+	 * The FormSynergy version string always has the same format "X.Y.Z"
+	 * where X is the major version number and Y is the minor version number
+     * and z for patch.
+	 *
+     * @visibility public static
+	 * @return string
+	 */
+	public static function Version()
+	{
+		return self::FORMSYNERGY_VERSION;
+	}
+}
+
+
+
+/**
  * Form Synergy Client Class
- *
- * @version 1.3.6.1
  */
 class Client
 {
@@ -1023,256 +1289,6 @@ class Client
             $this->rel('response', []);
         }
         return $response;
-    }
-}
-
-/**
- * Fs class
- * 
- * @version 1.3.5
- * 
- */
-class Fs
-{
-
-    /**
-     * self::$config 
-     * 
-     * Contains the necessary keys to gain access to the API service.
-     * 
-     * 
-     * @visibility public static
-     * @var array $config
-     */
-    public static $config;
-
-    /**
-     * self::$resellerid
-     * 
-     * Enables management over multiple accounts.
-     * 
-     * 
-     * @visibility public static
-     * @var string $resellerid
-     */
-    public static $resellerid;
-
-    /**
-     * self::$profileid
-     * 
-     * Unique identifier for an account or profile.
-     * 
-     * 
-     * @visibility public static
-     * @var string $profileid
-     */
-    public static $profileid;
-
-    /**
-     * self::$storage
-     * 
-     * Directory to store details regarding resources.
-     * 
-     * 
-     * @visibility public static
-     * @var sting $storage
-     */
-    public static $storage;
-
-    /**
-     * Resellerid()
-     * Load the reseller account, in order to manage multiple profiles.
-     * 
-     * 
-     * @visibility public static
-     * @uses self::$resellerid
-     * @returns void
-     */
-    public static function Reseller($resellerid = null)
-    {
-        if( !self::$resellerid && is_null($resellerid)) {
-            throw new FsException('In order to return the reseller id, it must be defined first.');
-        }
-        if(!is_null($resellerid)) {
-            self::$resellerid = $resellerid;
-        }
-        return self::$resellerid;
-    }
-
-    /**
-     * Load()
-     * 
-     * Load the profile, a new profile id can be set to load an different account.
-     * 
-     * 
-     * @visibility public static
-     * @uses self::$profileid
-     * @returns void
-     */
-    public static function Load($profileid = null)
-    {
-        if( !self::$profileid && is_null($profileid)) {
-            throw new FsException('In order to return the profile id, it must be defined first.');
-        }
-        if(!is_null($profileid)) {
-            self::$profileid = $profileid;
-        }
-        return self::$profileid;
-    }
-    
-    /**
-     * Config()
-     * 
-     * API configuration
-     * 
-     * 
-     * @visibility public static
-     * @uses self::$config
-     * @returns void
-     */
-    public static function Config($config = null)
-    {
-        if( !self::$config && is_null($config)) {
-            throw new FsException('In order to return configuration variables, they myst be defined first.');
-        }
-        if(!is_null($config)) {
-            self::$config = $config;
-        }
-        return self::$config;
-    }
-
-    /**
-     * Storage()
-     * 
-     * Will set the default storage.
-     * 
-     * 
-     * @visibility public static
-     * @uses is_dir()
-     * @uses mkdir()
-     * @uses file_exists()
-     * @uses rtrim()
-     * @uses FsException()
-     * @uses self::$storage
-     * @param string $path
-     * @param string $dir
-     * @return string
-     */
-    public static function Storage($path, $dir)
-    {
-        is_dir($path . '/' . $dir) || mkdir($path . '/' . $dir);
-        if (is_writable($path . '/' . $dir)) {
-            self::$storage = rtrim($path . '/' . $dir, '/');
-        }
-        else if(file_exists($path . '/' . $dir)) {
-            self::$storage = rtrim($path . '/' . $dir, '/');
-        } else {
-            self::$storage = false;
-        }
-    }
-
-    /**
-     * Includes()
-     * 
-     * Helper method to check if a needle exists in a haystack.
-     * 
-     * 
-     * @visibility public static
-     * @uses strpos()
-     * @uses strtolower()
-     * @returns bool
-     */
-    public static function Includes($needle, $haystack)
-    {
-        if (!$haystack) {
-            return false;
-        }
-        if (!$needle) {
-            return false;
-        }
-        $return = (strpos(strtolower($haystack), strtolower($needle)) !== false) ? true : false;
-        return $return;
-    }
-
-    /**
-     * Resources()
-     * 
-     * Will instantiate the Resource class through static method
-     * 
-     * 
-     * @visibility public static
-     * @see class Resources
-     * @param string $package
-     * @returns object $resource
-     */
-    public static function Resource($package)
-    {
-        $resource = new Resource($package, self::$storage);
-        return $resource;
-    }
-
-    /**
-     * Get()
-     * 
-     * This method will be deprecated soon, since introduction of the class Resource.
-     * 
-     * 
-     * @visibility public static
-     * @param string $key
-     * @param string $id
-     * @uses self::Resources()
-     * @uses isset()
-     * @uses is_null()
-     * @uses self::$data
-     * @returns array
-     */
-    public static function Get($key, $id = null)
-    {
-        if (!self::$data) {
-            self::Resources();
-        }
-
-        if (self::$data) {
-            $package = isset(self::$data[$key]) ? self::$data[$key] : false;
-            return !is_null($id) && $package && isset($package[$id]) ? true : is_null($id) && $package ? true : false;
-        }
-        return false;
-    }
- 
-
-    /**
-     * Api()
-     * 
-     * Will instantiate the API.
-     * 
-     * 
-     * @visibility public static
-     * @see class Client
-     * @uses isset()
-     * @uses Client::Config()
-     * @uses Client::Reseller()
-     * @uses Client::Load()
-     * @return object
-     */
-    public static function Api()
-    {
-        try {
-            $api = new Client();
-            $api->Config(self::$config);
-    
-            if (isset(self::$resesslerid)) {
-                $api->Reseller(self::$resellerid);
-            }
-    
-            if (isset(self::$profileid)) {
-                $api->Load(self::$profileid);
-            }
-            return $api;
-        }
-        catch(FsException $e) {
-            echo $e->getMessage();
-        }
-        
     }
 }
 
