@@ -17,7 +17,7 @@ namespace FormSynergy;
 /**
  * Fs class
  * 
- * @version 1.3.6.3
+ * @version 1.3.6.4
  * 
  */
 class Fs
@@ -25,7 +25,7 @@ class Fs
     /**
 	 * FormSynergy version constant.
 	 */
-	const FORMSYNERGY_VERSION = '1.3.6.3';
+	const FORMSYNERGY_VERSION = '1.3.6.4';
 
     /**
      * self::$config 
@@ -1391,6 +1391,23 @@ class Resource
                 break;
         }
     }
+
+    /**
+     * Html()
+     * 
+     * The data that needs to be stored.
+     * 
+     * 
+     * @visibility public
+     * @param array $data
+     * @returns void
+     */
+    public function StoreModule($id, $data) 
+    {
+        $file = $this->storage . '/';
+        $file .= '-' . $id . '.html';
+        file_put_contents($file, $data);
+    }
  
     /**
      * Store()
@@ -1534,7 +1551,6 @@ class Resource
             return $return;
         }
     }
-
 }
 
 /**
