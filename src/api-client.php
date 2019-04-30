@@ -17,7 +17,7 @@ namespace FormSynergy;
 /**
  * Fs class
  * 
- * @version 1.3.6.4
+ * @version 1.4.1.0
  * 
  */
 class Fs
@@ -25,7 +25,7 @@ class Fs
     /**
 	 * FormSynergy version constant.
 	 */
-	const FORMSYNERGY_VERSION = '1.3.6.4';
+	const FORMSYNERGY_VERSION = '1.3.6.6';
 
     /**
      * self::$config 
@@ -199,39 +199,10 @@ class Fs
      */
     public static function Resource($package)
     {
-        $resource = new Resource($package, self::$storage);
+        $resource = new \File_Storage($package, self::$storage);
         return $resource;
     }
-
-    /**
-     * Get()
-     * 
-     * This method will be deprecated soon, since introduction of the class Resource.
-     * 
-     * 
-     * @visibility public static
-     * @param string $key
-     * @param string $id
-     * @uses self::Resources()
-     * @uses isset()
-     * @uses is_null()
-     * @uses self::$data
-     * @returns array
-     */
-    public static function Get($key, $id = null)
-    {
-        if (!self::$data) {
-            self::Resources();
-        }
-
-        if (self::$data) {
-            $package = isset(self::$data[$key]) ? self::$data[$key] : false;
-            return !is_null($id) && $package && isset($package[$id]) ? true : is_null($id) && $package ? true : false;
-        }
-        return false;
-    }
  
-
     /**
      * Api()
      * 
@@ -251,11 +222,9 @@ class Fs
         try {
             $api = new Client();
             $api->Config(self::$config);
-    
             if (isset(self::$resesslerid)) {
                 $api->Reseller(self::$resellerid);
             }
-    
             if (isset(self::$profileid)) {
                 $api->Load(self::$profileid);
             }
@@ -1289,267 +1258,6 @@ class Client
             $this->rel('response', []);
         }
         return $response;
-    }
-}
-
-/**
- * Class Resource 
- *
- * Small class will instantiate a resource object.
- */
-class Resource
-{
-
-    /**
-     * @visibility public
-     * @var string $package
-     */
-    public $package;
-
-    /**
-     * @visibility public
-     * @var string $get
-     */
-    public $get = false;
-
-    /**
-     * @visibility public
-     * @var string $sub
-     */
-    public $sub = false;
-
-    /**
-     * @visibility public
-     * @var string $storage
-     */
-    public $storage;
-
-    /**
-     * @visibility public
-     * @var string $file
-     */
-    public $file;
-
-    /**
-     * @visibility public
-     * @var string $action
-     */
-    public $action;
-
-    /**
-     * @visibility public
-     * @var string $find
-     */
-    public $find;
-
-    /**
-     * Class constructor.
-     * 
-     * 
-     * @visibility public
-     * @param string $package
-     * @param  string $storage
-     * @returns self
-     */
-    public function __construct($package,$storage)
-    {
-        $this->package = $package;
-        $this->storage = $storage;
-        return $this;
-    }
-
-    /**
-     * Data()
-     * 
-     * The data that needs to be stored.
-     * 
-     * 
-     * @visibility public
-     * @param array $data
-     * @returns void
-     */
-    public function Data($data) 
-    {
-        switch($this->action){
-
-            case 'store' :
-                $data = file_put_contents($this->file, json_encode($data));
-                break;
-
-            case 'update' :
-                if (file_exists($this->file)) {
-                    $stored_data = json_decode(file_get_contents($this->file), true);
-                }
-        
-                if ($stored_data) {
-                    $replace = array_replace($stored_data, $data);
-                }
-        
-                if ($replace) {
-                    file_put_contents($this->file, json_encode($replace));
-                }
-                break;
-        }
-    }
-
-    /**
-     * Html()
-     * 
-     * The data that needs to be stored.
-     * 
-     * 
-     * @visibility public
-     * @param array $data
-     * @returns void
-     */
-    public function StoreModule($id, $data) 
-    {
-        $file = $this->storage . '/';
-        $file .= '-' . $id . '.html';
-        file_put_contents($file, $data);
-    }
- 
-    /**
-     * Store()
-     * 
-     * Will store retrieved responses in json format.
-     * 
-     * 
-     * @visibility public
-     * @param string $name
-     * @returns self
-     */
-    public function Store($name)
-    {
-        $file = $this->storage . '/';
-        $file .= $this->package;
-
-        if (!is_null($name)) {
-            $file .= '-' . $name . '.json';
-        } 
-
-        else {
-            $file .= '.json';
-        }
-
-        $this->action = 'store';
-        $this->file = $file;
-        return $this;
-    }
-
-    /**
-     * Update()
-     * 
-     * Will update a previously stored response.
-     * 
-     * 
-     * @visibility public
-     * @param string $name
-     * @returns self
-     */
-    public function Update($name)
-    {
-        $data = false;
-        $replace = false;
-        $file = $this->storage . '/';
-        $file .= $this->package;
-
-        if (!is_null($name)) {
-            $file .= '-' . $name . '.json';
-        } 
-        
-        else {
-            $file .= '.json';
-        }
-
-        $this->action = 'update';
-        $this->file = $file;
-        return $this;
-    }
-
-    /**
-     * Get()
-     * 
-     * Will retrieve stored data with $name.
-     * 
-     * 
-     * @visibility public
-     * @param string $name
-     * @returns array $data
-     */
-    public function Get($name)
-    {
-        $data = false;
-        $replace = false;
-        $file = $this->storage . '/';
-        $file .= $this->package;
-        $file .= '-' . $name . '.json';
-
-        if (!file_exists($file)) {
-            return false;
-        }
- 
-        $data = json_decode(file_get_contents($file), true);
-        return $data;
-    }
-
-    /**
-     * Find()
-     * 
-     * Will find key and sub within the retrieved data.
-     * 
-     * 
-     * @visibility public
-     * @see self::In()
-     * @param string $key
-     * @param string $sub
-     * @returns array
-     */
-    public function Find($key, $sub = null)
-    {
-        if( !$this->get ) {
-            if(!is_null($sub)) {
-                $this->sub = $sub;
-            }
-            $this->find = $key;
-            return $this;
-        }
-        
-        if ($this->get && isset($this->get[$key])) {
-            return $this->get[$key];
-        }
-        return false;
-    }
-
-    /**
-     * In()
-     * 
-     * Will load the stored data by name
-     * 
-     * 
-     * @visibility public
-     * @param string $name
-     * @returns array
-     */
-    public function In($name) {
-        if( $this->find ) {
-            $file = $this->storage . '/';
-            $file .= $this->package;
-            $file .= '-' . $name . '.json';
-
-            if (!file_exists($file)) {
-                return false;
-            }
-
-            $data = json_decode(file_get_contents($file), true);
-            $return = $data && isset($data[$this->find]) ? $data[$this->find] : false;
-
-            if($this->sub && $return) {
-                return isset($return[$this->sub]) ? $return[$this->sub] : false; 
-            }
-
-            return $return;
-        }
     }
 }
 
