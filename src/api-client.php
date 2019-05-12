@@ -17,7 +17,7 @@ namespace FormSynergy;
 /**
  * Fs class
  * 
- * @version 1.4.1.0
+ * @version 1.5.0.1
  * 
  */
 class Fs
@@ -25,7 +25,7 @@ class Fs
     /**
 	 * FormSynergy version constant.
 	 */
-	const FORMSYNERGY_VERSION = '1.3.6.6';
+	const FORMSYNERGY_VERSION = '1.5.0.1';
 
     /**
      * self::$config 
@@ -78,7 +78,7 @@ class Fs
      * 
      * @visibility public static
      * @uses self::$resellerid
-     * @returns void
+     * @return void
      */
     public static function Reseller($resellerid = null)
     {
@@ -99,7 +99,7 @@ class Fs
      * 
      * @visibility public static
      * @uses self::$profileid
-     * @returns void
+     * @return void
      */
     public static function Load($profileid = null)
     {
@@ -120,7 +120,7 @@ class Fs
      * 
      * @visibility public static
      * @uses self::$config
-     * @returns void
+     * @return void
      */
     public static function Config($config = null)
     {
@@ -172,7 +172,7 @@ class Fs
      * @visibility public static
      * @uses strpos()
      * @uses strtolower()
-     * @returns bool
+     * @return bool
      */
     public static function Includes($needle, $haystack)
     {
@@ -195,7 +195,7 @@ class Fs
      * @visibility public static
      * @see class Resources
      * @param string $package
-     * @returns object $resource
+     * @return object $resource
      */
     public static function Resource($package)
     {
