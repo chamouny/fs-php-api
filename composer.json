@@ -1,6 +1,6 @@
 {
     "name": "form-synergy/php-api",
-    "description": "Form Synergy API client.",
+    "description": "API client written in PHP to manage Form Synergy services.",
     "keywords": [
         "client",
         "form",
@@ -15,7 +15,7 @@
     "license": "MIT",
     "authors": [{
         "name": "Joseph G Chamoun",
-        "email": "formsynergy@gmail.coom",
+        "email": "formsynergy@gmail.com",
         "homepage": "https://github.com/form-synergy"
     }],
     "require": {
