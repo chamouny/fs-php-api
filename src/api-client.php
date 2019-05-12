@@ -15,28 +15,280 @@ namespace FormSynergy;
  */
 
 /**
- *
+ * Fs class
+ * 
+ * @version 1.5.0.1
+ * 
+ */
+class Fs
+{
+    /**
+	 * FormSynergy version constant.
+	 */
+	const FORMSYNERGY_VERSION = '1.5.0.1';
+
+    /**
+     * self::$config 
+     * 
+     * Contains the necessary keys to gain access to the API service.
+     * 
+     * 
+     * @visibility public static
+     * @var array $config
+     */
+    public static $config;
+
+    /**
+     * self::$resellerid
+     * 
+     * Enables management over multiple accounts.
+     * 
+     * 
+     * @visibility public static
+     * @var string $resellerid
+     */
+    public static $resellerid;
+
+    /**
+     * self::$profileid
+     * 
+     * Unique identifier for an account or profile.
+     * 
+     * 
+     * @visibility public static
+     * @var string $profileid
+     */
+    public static $profileid;
+
+    /**
+     * self::$storage
+     * 
+     * Directory to store details regarding resources.
+     * 
+     * 
+     * @visibility public static
+     * @var sting $storage
+     */
+    public static $storage;
+
+    /**
+     * Resellerid()
+     * Load the reseller account, in order to manage multiple profiles.
+     * 
+     * 
+     * @visibility public static
+     * @uses self::$resellerid
+     * @return void
+     */
+    public static function Reseller($resellerid = null)
+    {
+        if( !self::$resellerid && is_null($resellerid)) {
+            throw new FsException('In order to return the reseller id, it must be defined first.');
+        }
+        if(!is_null($resellerid)) {
+            self::$resellerid = $resellerid;
+        }
+        return self::$resellerid;
+    }
+
+    /**
+     * Load()
+     * 
+     * Load the profile, a new profile id can be set to load an different account.
+     * 
+     * 
+     * @visibility public static
+     * @uses self::$profileid
+     * @return void
+     */
+    public static function Load($profileid = null)
+    {
+        if( !self::$profileid && is_null($profileid)) {
+            throw new FsException('In order to return the profile id, it must be defined first.');
+        }
+        if(!is_null($profileid)) {
+            self::$profileid = $profileid;
+        }
+        return self::$profileid;
+    }
+    
+    /**
+     * Config()
+     * 
+     * API configuration
+     * 
+     * 
+     * @visibility public static
+     * @uses self::$config
+     * @return void
+     */
+    public static function Config($config = null)
+    {
+        if( !self::$config && is_null($config)) {
+            throw new FsException('In order to return configuration variables, they myst be defined first.');
+        }
+        if(!is_null($config)) {
+            self::$config = $config;
+        }
+        return self::$config;
+    }
+
+    /**
+     * Storage()
+     * 
+     * Will set the default storage.
+     * 
+     * 
+     * @visibility public static
+     * @uses is_dir()
+     * @uses mkdir()
+     * @uses file_exists()
+     * @uses rtrim()
+     * @uses FsException()
+     * @uses self::$storage
+     * @param string $path
+     * @param string $dir
+     * @return string
+     */
+    public static function Storage($path, $dir)
+    {
+        is_dir($path . '/' . $dir) || mkdir($path . '/' . $dir);
+        if (is_writable($path . '/' . $dir)) {
+            self::$storage = rtrim($path . '/' . $dir, '/');
+        }
+        else if(file_exists($path . '/' . $dir)) {
+            self::$storage = rtrim($path . '/' . $dir, '/');
+        } else {
+            self::$storage = false;
+        }
+    }
+
+    /**
+     * Includes()
+     * 
+     * Helper method to check if a needle exists in a haystack.
+     * 
+     * 
+     * @visibility public static
+     * @uses strpos()
+     * @uses strtolower()
+     * @return bool
+     */
+    public static function Includes($needle, $haystack)
+    {
+        if (!$haystack) {
+            return false;
+        }
+        if (!$needle) {
+            return false;
+        }
+        $return = (strpos(strtolower($haystack), strtolower($needle)) !== false) ? true : false;
+        return $return;
+    }
+
+    /**
+     * Resources()
+     * 
+     * Will instantiate the Resource class through static method
+     * 
+     * 
+     * @visibility public static
+     * @see class Resources
+     * @param string $package
+     * @return object $resource
+     */
+    public static function Resource($package)
+    {
+        $resource = new \File_Storage($package, self::$storage);
+        return $resource;
+    }
+ 
+    /**
+     * Api()
+     * 
+     * Will instantiate the API.
+     * 
+     * 
+     * @visibility public static
+     * @see class Client
+     * @uses isset()
+     * @uses Client::Config()
+     * @uses Client::Reseller()
+     * @uses Client::Load()
+     * @return object
+     */
+    public static function Api()
+    {
+        try {
+            $api = new Client();
+            $api->Config(self::$config);
+            if (isset(self::$resesslerid)) {
+                $api->Reseller(self::$resellerid);
+            }
+            if (isset(self::$profileid)) {
+                $api->Load(self::$profileid);
+            }
+            return $api;
+        }
+        catch(FsException $e) {
+            echo $e->getMessage();
+        }
+    }
+
+    /**
+	 * Returns the FormSynergy version string.
+	 * The FormSynergy version string always has the same format "X.Y.Z"
+	 * where X is the major version number and Y is the minor version number
+     * and z for patch.
+	 *
+     * @visibility public static
+	 * @return string
+	 */
+	public static function Version()
+	{
+		return self::FORMSYNERGY_VERSION;
+	}
+}
+
+
+
+/**
  * Form Synergy Client Class
- *
- * @version 1.3.4
  */
 class Client
 {
 
     /**
+     * self::$config
+     * 
      * Configuration of the api client
-     *
+     * 
+     * 
+     * @visibility private
      * @var array
      */
     private $config = [];
 
     /**
+     * self::$internal
+     * 
      * Internal array to manage variables
-     *
+     * 
+     * 
+     * @visibility private
      * @var array
      */
     private $internal = [];
 
+    /**
+     * self::as
+     * 
+     * Will temporary store response
+     * 
+     * 
+     * @visibility private
+     * @var array
+     */
     private $as = [];
 
     /**
@@ -44,13 +296,15 @@ class Client
      *
      * Configuration function to ser config values
      *
+     * @visibility public
      * @param array $config
      * @return void
      */
     public function Config($config)
     {
         $this->config = $config;
-        $this->_rel('max_auth_count', $config['max_auth_count']);
+        $this->_rel('max_auth_count', 0);
+        $this->_rel('max_auth_allowed', $config['max_auth_count']);
     }
 
     /**
@@ -58,9 +312,10 @@ class Client
      *
      * Setter for rel
      *
+     * @visibility public
      * @param sting $name
      * @param mixed $value
-     * @return void
+     * @return self
      */
     public function _rel($name, $value)
     {
@@ -85,10 +340,11 @@ class Client
      * If the value is an array, the key and it's values will be appended
      * to the name.
      *
+     * @visibility public
      * @uses Api::_rel()
      * @param string $name
      * @param mixed $value
-     * @return void
+     * @return mixed
      */
     public function rel($name, $value = null)
     {
@@ -109,6 +365,9 @@ class Client
      * unrel()
      *
      * Will remove data stored in the internal object
+     * 
+     * 
+     * @visibility public
      * @uses Api::unrel()
      * @return void
      */
@@ -127,9 +386,10 @@ class Client
      * The options will streamline the process of distributing variables
      * to the rel function.
      *
+     * @visibility public
      * @uses Api::rel()
      * @param array $options
-     * @return void
+     * @return self
      */
     public function options($options)
     {
@@ -143,9 +403,10 @@ class Client
      *
      * Will set the reseller account as master.
      *
+     * @visibility public
      * @uses Api::options()
      * @param string $resellerid
-     * @return void
+     * @return self
      */
     public function Reseller($resellerid)
     {
@@ -165,9 +426,10 @@ class Client
      *
      * Will load the profile associated with an account.
      *
+     * @visibility public
      * @uses Api::options()
      * @param string $profileid
-     * @return void
+     * @return self
      */
     public function Load($profileid)
     {
@@ -194,17 +456,33 @@ class Client
      * Once authentication is successful, a new access point,
      * will provide temporary access.
      *
-     * @return void
+     * @visibility private
+     * @return array
      */
-    public function Authenticate($authenticate = null)
+    private function Authenticate($authenticate = null)
     {
 
         // Get stored access point from session.
-        $accessPoint = Session::get('AccessPoint');
+        $accessPoint = Session::Get('AccessPoint');
 
         // Access point exists, try again on the next request.
         if ($accessPoint) {
             return;
+        }
+
+        /**
+         * An other precaution, since authentication is generated automatically,
+         * if authentication was not successful due to network or connection issues,
+         * It will keep on trying.
+         *
+         * This block will limit this process to a set number.
+         *
+         * The max consecutive Authentication can be set in the config method.
+         *
+         **/
+        
+        if ( $this->rel('max_auth_allowed') < $this->rel('max_auth_count', $this->rel('max_auth_count') + 1 ) ) {
+            throw new FsException( 'Authorization Count exceeds the set limit of ' . $this->rel('max_auth_count') );
         }
 
         /**
@@ -254,10 +532,11 @@ class Client
      * We previously stored request details in a temporary storage to prevent
      * service interruption, we can set the request back into position.
      *
+     * @visibility private
      * @param string $accessPoint
-     * @return void
+     * @return self
      */
-    public function _close_authentification_request($accessPoint)
+    private function _close_authentification_request($accessPoint)
     {
         $this->options([
             'method' => $this->rel('temp')['method'],
@@ -293,11 +572,12 @@ class Client
      *
      *   $response = $api->Response();
      *
+     * @visibility public
      * @see https://... for more examples
      * @uses Api::Where()
      * @uses Api::options()
      * @param string $resource
-     * @return void
+     * @return self
      */
     public function Get($resource, $transmit = false)
     {
@@ -327,11 +607,12 @@ class Client
      *
      *   $response = $api->Response();
      *
+     * @visibility public
      * @see https://... for more examples
      * @uses Api::Attributes()
      * @uses Api::options()
      * @param string $resource
-     * @return void
+     * @return self
      */
     public function Create($resource)
     {
@@ -360,12 +641,13 @@ class Client
      * 3) Complete the delete process
      *      ->Delete();
      *
+     * @visibility public
      * @see https://... for more examples
      * @uses Api::Get()
      * @uses Api::Where()
      * @uses Api::options()
      * @uses Api::_transmit()
-     * @return void
+     * @return self
      */
     public function Delete()
     {
@@ -404,12 +686,13 @@ class Client
      *
      *      $data = $api->Response()['data'];
      *
+     * @visibility public
      * @see https://... for more examples
      * @uses Api::With()
      * @uses Api::Where()
      * @uses Api::options()
      * @param string $find
-     * @return void
+     * @return self
      */
     public function Find($find)
     {
@@ -423,39 +706,16 @@ class Client
     }
 
     /**
-     * With()
-     *
-     * Can be used in combination with:
-     *      -Find()
-     *
-     * With() will apply the logic of a scoring model to the query.
-     * At this time it can only be used to query leads.
-     *
-     * @param array $with
-     * @uses Api::options()
-     * @return void
-     */
-    public function With($with)
-    {
-        $this->options([
-            'request' => [
-                'with' => $with,
-            ],
-        ]);
-
-        return $this;
-    }
-
-    /**
      * Where()
      *
      * Defines the terms of a request.
      * It is required when getting or finding object.
      *
+     * @visibility public
      * @param array $where
      * @uses Api::options()
      * @uses Api::_transmit()
-     * @return void
+     * @return self
      */
     public function Where($where)
     {
@@ -473,7 +733,8 @@ class Client
      *
      * Once verification meta tag is included in the index page, verify the domain.
      *
-     * @return void
+     * @visibility public
+     * @return self
      */
     public function Verify()
     {
@@ -494,7 +755,8 @@ class Client
      *
      * Once a domain has been verified, scan the domain in question to retrieve all etags.
      *
-     * @return void
+     * @visibility public
+     * @return self
      */
     public function Scan()
     {
@@ -510,29 +772,16 @@ class Client
 
         return $this;
     }
-
-    /**
-     * Ready()
-     *
-     * Closure
-     *
-     * @param callable $fn
-     * @return closure
-     */
-    public function Ready($fn)
-    {
-        $response = $this->Response();
-        $fn($response);
-
-        return $response;
-    }
-
+ 
     /**
      * Then()
      *
-     * Will renew Api and Secret key.
+     * Will return self in closure.
+     * 
+     * 
+     * @visibility public
      * @param callable $fn
-     * @return closure
+     * @return self
      */
     public function Then($fn)
     {
@@ -542,14 +791,22 @@ class Client
     /**
      * __As()
      *
-     * It store the response as a named keyword
+     * It store the response as a named keyword, 
+     * when using the Find method, the response will 
+     * consist of multiple results, use $index, to 
+     * store one result.
+     * 
+     * Example:
+     *  ->As('name', 0);
      *
+     * @visibility public
      * @use __call()
      * @use Api::_rel()
      * @param string $name
-     * @return void
+     * @return self
      */
-    function as ($name, $index = null) {
+    public function As($name, $index = null) 
+    {
         $response = $this->Response();
         $this->rel('_as', $name);
         $this->as[$name] = !is_null($index) ? $response['data'][$index] : $response['data'];
@@ -557,6 +814,17 @@ class Client
         return $this;
     }
 
+
+    /**
+     * Export()
+     * 
+     * Will return all selected resources.
+     * 
+     * 
+     * @visibility public
+     * @param array $resource
+     * @return self
+     */
     public function Export($resources)
     {
         $this->options([
@@ -579,6 +847,7 @@ class Client
      *
      * Used to retrieve responses
      *
+     * @visibility public
      * @param string $as_method
      * @param string $k
      * @return mixed
@@ -596,7 +865,7 @@ class Client
             ? $this->as[$method][$k[0]]
             : $this->as[$method];
         } elseif ($k) {
-            exit('Unable to locate information');
+            throw new FsException('Unable to locate information');
         } else {
             return false;
         }
@@ -608,6 +877,7 @@ class Client
      * Defines the data of an object that is being created.
      * It is required when creating an object.
      *
+     * @visibility public
      * @param array $attributes
      * @uses options()
      * @uses Api::_transmit()
@@ -668,6 +938,7 @@ class Client
      *              'message' => 'New message'
      *          ]);
      *
+     * @visibility public
      * @see https://... for more examples
      * @param array $update
      * @uses Api::options()
@@ -695,6 +966,7 @@ class Client
      *
      * Will replace the attributes stored on the interaction service
      *
+     * @visibility public
      * @param array $update
      * @uses Api::_options()
      * @uses Api::rel()
@@ -722,6 +994,7 @@ class Client
      *
      * Will renew Api and Secret key.
      *
+     * @visibility public
      * @uses Api::_options()
      * @uses Api::rel()
      * @uses Api::_transmit()
@@ -749,6 +1022,7 @@ class Client
      * This method can be applied to a strategy or to a module.
      * NOTE: The html is encoded is base 64.
      *
+     * @visibility public
      * @uses Api::_options()
      * @uses Api::_transmit()
      * @return object
@@ -775,17 +1049,18 @@ class Client
      *  - accessPoint
      *  - resource
      *
+     * @visibility private
      * @uses Api::_options()
      * @uses Api::rel()
-     * @uses Session::get()
+     * @uses Session::Get()
      * @return string url
      */
-    public function uri()
+    private function uri()
     {
         $uri = '/';
         $uri .= $this->config['version'];
         $uri .= '/';
-        $accessPoint = Session::get('AccessPoint');
+        $accessPoint = Session::Get('AccessPoint');
 
         $uri .= $accessPoint ? $accessPoint : '';
         $uri .= $accessPoint ? '/' : '';
@@ -805,11 +1080,12 @@ class Client
      *
      * Will prepare and package the request into a payload.
      *
+     * @visibility private
      * @uses Api::rel()
      * @uses json_encode()
      * @return array
      */
-    public function _prepared_request()
+    private function _prepared_request()
     {
         switch ($this->rel('method')) {
 
@@ -842,6 +1118,7 @@ class Client
      * the "$auth" flag must be present to prevent
      * to hook the authentication process, and prevent an infinit loop.
      *
+     * @visibility private
      * @uses Api::_response_handler()
      * @uses Api::rel()
      * @uses Api::uri()
@@ -851,15 +1128,13 @@ class Client
      * @param bool $auth
      * @return void
      */
-    public function _transmit($auth = false)
+    private function _transmit($auth = false)
     {
 
         // Check if the config exists.
         if (!$this->config) {
             // Exit the config is required.
-            exit(json_encode([
-                'Error' => 'API Configuration details are missing!',
-            ], JSON_PRETTY_PRINT));
+            throw new FsException('Configuration settings are missing');
         }
 
         /**
@@ -868,24 +1143,11 @@ class Client
          *
          * If an "Authenticate" flag is sent, we must authenticate.
          **/
-        if (!$auth && Session::get('Authenticate')) {
+        if (!$auth && Session::Get('Authenticate')) {
             $this->Authenticate();
         }
 
-        /**
-         * An other precaution, since authentication is generated automatically,
-         * if authentication was not successful due to network or connection issues,
-         * It will keep on trying.
-         *
-         * This block will limit this process to a set number.
-         *
-         * The max consecutive Authentication can be set in the config method.
-         *
-         **/
-
-        if (0 > $this->rel('max_auth_count', $this->rel('max_auth_count') - 1)) {
-            exit('Authorization Count exceeds the set limit of ' . $this->rel('max_auth_count'));
-        }
+        
 
         /**
          * Instantiate The Guzzle Client.
@@ -916,8 +1178,7 @@ class Client
              * and display the response phrase.
              */
             http_response_code($e->getResponse()->getStatusCode());
-
-            exit('Server responded with a: ' . $e->getResponse()->getStatusCode() . ', ' . $e->getResponse()->getReasonPhrase() . '.');
+            throw new FsException('Server responded with a: ' . $e->getResponse()->getStatusCode() . ', ' . $e->getResponse()->getReasonPhrase() . '.');
         }
         return $this;
     }
@@ -932,19 +1193,20 @@ class Client
      *
      * The response data can be accessed by using $api->Response();
      *
+     * @visibility private
      * @uses json_decode()
      * @uses GuzzleHttp\Client()::getBody()
      * @uses GuzzleHttp\Client()::getStatusCode()
      * @uses GuzzleHttp\Client()::getReasonPhrase()
      * @uses GuzzleHttp\Client()::getHeaders()
-     * @uses Session::set()
-     * @uses Session::delete()
+     * @uses Session::Set()
+     * @uses Session::Delete()
      * @uses Api::_close_authentification_request()
      * @uses Api::rel()
      * @param object $response
      * @return void
      */
-    public function _response_handler($response)
+    private function _response_handler($response)
     {
         $data = json_decode($response->getBody(), true);
 
@@ -957,13 +1219,13 @@ class Client
         ]);
 
         if (isset($data['AccessPoint']) && $data['AccessPoint']) {
-            Session::set('AccessPoint', $data['AccessPoint']);
-            Session::delete('Authenticate');
+            Session::Set('AccessPoint', $data['AccessPoint']);
+            Session::Delete('Authenticate');
             $this->_close_authentification_request($data['AccessPoint']);
         }
 
         if (isset($data['Authenticate']) && $data['Authenticate'] && !$data['AccessPoint']) {
-            Session::set('Authenticate', 'AccessPoint');
+            Session::Set('Authenticate', 'AccessPoint');
         }
 
         if (isset($data['objid'])) {
@@ -979,8 +1241,8 @@ class Client
      *
      * Will return the response of a request.
      *
+     * @visibility public
      * @uses Api::rel()
-     *
      * @return array $response [
      *          'statusCode',
      *          'responsePhrase',
@@ -999,265 +1261,10 @@ class Client
     }
 }
 
-class Fs
-{
-
-    public static $config;
-    public static $resellerid;
-    public static $profileid;
-    public static $storage;
-    public static $errors = [];
-    public static $responses = [];
-
-    /**
-     * Load the reseller account, in order to manage multiple profiles.
-     */
-    public static function Reseller($res)
-    {
-        self::$resellerid = $res;
-    }
-
-    /**
-     * Load the profile, a new profile id can be set to load an different account.
-     */
-    public static function Load($prof)
-    {
-        self::$profileid = $prof;
-    }
-    
-    /**
-     * API configuration
-     */
-    public static function Config($conf = null)
-    {
-        if (is_null($conf) && isset(self::$config)) {
-            return self::$config;
-        }
-        self::$config = $conf;
-    }
-
-    /**
-     * If any errors are generated, they can be retrieved using this method.
-     */
-    public function Error($type = 'all', $error = false)
-    {
-        if ($error) {
-            if (!isset(self::$errors[$type])) {
-                self::$errors[$type] = [];
-            }
-            $pointer = count(self::$errors[$type]);
-            self::$errors[$type][$pointer] = $error;
-        }
-        return self::$errors[$type];
-    }
-
-    /**
-     * Will set the default storage.
-     */
-    public static function Storage($path, $dir)
-    {
-        is_dir($path . '/' . $dir) || mkdir($path . '/' . $dir);
-        if (is_writable($path . '/' . $dir)) {
-            self::$storage = rtrim($path . '/' . $dir, '/');
-        } else {
-            self::Error('Store', 'Unable to write in ' . self::$storage . ' directory! Local storage is disabled.');
-            self::$storage = false;
-        }
-    }
-
-    /**
-     * Helper method to check if a needle exists in a haystack.
-     */
-    public static function Includes($needle, $haystack)
-    {
-        if (!$haystack) {
-            return false;
-        }
-        if (!$needle) {
-            return false;
-        }
-        $return = (strpos(strtolower($haystack), strtolower($needle)) !== false) ? true : false;
-        return $return;
-    }
-
-    /**
-     * Will instantiate the Resource class through static method.
-     */
-    public static function Resource($package)
-    {
-        $resource = new Resource($package);
-        $resource->Storage(self::$storage);
-        return $resource;
-    }
-
-    /**
-     * This method will be deprecated soon, since introduction of the class Resource.
-     */
-    public static function Get($key, $id = null)
-    {
-        if (!self::$data) {
-            self::Resources();
-        }
-
-        if (self::$data) {
-            $package = isset(self::$data[$key]) ? self::$data[$key] : false;
-            return !is_null($id) && $package && isset($package[$id]) ? true : is_null($id) && $package ? true : false;
-        }
-        return false;
-    }
-
-    /**
-     * This method will be deprecated soon, since introduction of the class Resource.
-     */
-    public static function Store($name, $type, $data = null)
-    {
-        if (!self::$storage) {
-            self::Error('Store', $name . ' Check storage permission');
-            return false;
-        }
-
-        if (!is_null($data) && !empty($data)) {
-            file_put_contents(self::$storage . '/' . $name . '.' . $type, $data);
-        }
-
-    }
-
-    /**
-     * Will instantiate the API.
-     */
-    public static function Api()
-    {
-        $api = new Client();
-        $api->Config(self::$config);
-        if (isset(self::$resesslerid)) {
-            $api->Reseller(self::$resellerid);
-        }
-        if (isset(self::$profileid)) {
-            $api->Load(self::$profileid);
-        }
-        return $api;
-    }
-}
-
 /**
- * Small class will instantiate a resource object.
+ * Class FsException extends Exception
  */
-class Resource
-{
-    public $package;
-    public $get = false;
-    public $storage;
-
-    public function __construct($package)
-    {
-        $this->package = $package;
-    }
-
-    /**
-     * Will set a storage directory.
-     */
-    public function Storage($storage)
-    {
-        $this->storage = $storage;
-        return $this;
-    }
-
-    /**
-     * Will store retrieved responses in json format.
-     */
-    public function Store($data, $name = null)
-    {
-
-        $file = $this->storage . '/';
-        $file .= $this->package;
-        if (!is_null($name)) {
-            $file .= '-' . $name . '.json';
-        } else {
-            $file .= '.json';
-        }
-        $data = file_put_contents($file, json_encode($data));
-    }
-
-    /**
-     * Will update a previously stored response.
-     */
-    public function Update($newdata, $name = null)
-    {
-
-        $data = false;
-        $replace = false;
-        $file = $this->storage . '/';
-        $file .= $this->package;
-
-        if (!is_null($name)) {
-            $file .= '-' . $name . '.json';
-        } else {
-            $file .= '.json';
-        }
-
-        if (file_exists($file)) {
-            $data = json_decode(file_get_contents($file), true);
-        }
-
-        if ($data) {
-            $replace = array_replace($data, $newdata);
-        }
-
-        if ($replace) {
-            file_put_contents($file, json_encode($replace));
-        }
-    }
-
-    /**
-     * Will temporarily store a retrieved object.
-     */
-    public function _set($data)
-    {
-        $this->get = $data;
-        return $this;
-    }
-
-    /**
-     * Will retrieve stored data.
-     */
-    public function Get($name = null)
-    {
-        $data = false;
-        $replace = false;
-        $file = $this->storage . '/';
-        $file .= $this->package;
-
-        if (!is_null($name)) {
-            $file .= '-' . $name . '.json';
-            if (file_exists($file)) {
-                $data = json_decode(file_get_contents($file), true);
-                $this->_set($data);
-                return $data;
-            }
-        }
-
-        $file .= '.json';
-        if (!file_exists($file)) {
-            return false;
-        }
-
-        $data = json_decode(file_get_contents($file), true);
-        $this->_set($data);
-
-        return $data;
-    }
-
-    /**
-     * Will find a key within the retrieved data.
-     */
-    public function find($key)
-    {
-        if ($this->get && isset($this->get[$key])) {
-            return $this->get[$key];
-        }
-        return false;
-    }
-}
+class FsException extends \Exception {}
 
 /**
  * Small class to handle and control sessions.
@@ -1266,13 +1273,14 @@ class Session
 {
 
     /**
-     * enable()
+     * Enable()
      *
      * Must be present to initialize sessions
      *
+     * @visibility public static
      * @return void
      */
-    public static function enable()
+    public static function Enable()
     {
         date_default_timezone_set('America/Los_Angeles');
         global $_SESSION;
@@ -1282,41 +1290,44 @@ class Session
     }
 
     /**
-     * set()
+     * Set()
      *
      * Will set or replace the value of an item store in session
      *
+     * @visibility public static
      * @param string $key
      * @param mixed $value
      * @return mixed
      */
-    public static function set($key, $value)
+    public static function Set($key, $value)
     {
         $_SESSION[$key] = $value;
     }
 
     /**
-     * get()
+     * Get()
      *
      * Will return the value of and item stored in session
      *
+     * @visibility public static
      * @param string $key
      * @return mixed
      */
-    public static function get($key)
+    public static function Get($key)
     {
         return isset($_SESSION[$key]) ? $_SESSION[$key] : false;
     }
 
     /**
-     * delete()
+     * Delete()
      *
      * Will permanently delete an item from the session
      *
+     * @visibility public static
      * @param mixed $key
      * @return void
      */
-    public static function delete($key)
+    public static function Delete($key)
     {
         if (isset($_SESSION[$key])) {
             unset($_SESSION[$key]);
