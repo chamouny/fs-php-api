@@ -17,7 +17,7 @@ namespace FormSynergy;
 /**
  * Fs class
  * 
- * @version 1.5.0.2
+ * @version 1.5.0.3
  * 
  */
 class Fs
@@ -25,7 +25,7 @@ class Fs
     /**
 	 * FormSynergy version constant.
 	 */
-	const FORMSYNERGY_VERSION = '1.5.0.2';
+	const FORMSYNERGY_VERSION = '1.5.0.3';
 
     /**
      * self::$config 
