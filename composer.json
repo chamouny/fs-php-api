@@ -21,7 +21,7 @@
     "require": {
         "php": ">=7.0",
         "guzzlehttp/guzzle": "~6.0",
-        "form-synergy/fs-storage": ">=1.5"
+        "form-synergy/fs-storage": "^1.5"
     },
     "replace": {
         "form-synergy/php-api": "self.version"
