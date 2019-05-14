@@ -7,7 +7,8 @@ namespace FormSynergy;
  * This client api can be used to manage and administer FormSynergy api accounts.
  *
  * For fast and easy development this Api, simplifies the registration of domains, along with strategies and modules.
- * Take a quick look at the example-setup-php directory, this basic example can be improved to best fit your needs.
+ * Take a quick look at the fs-demo package, this basic example can be improved to best fit your needs.
+ * https://github.com/form-synergy/fs-demo
  *
  * @author     Joseph G. Chamoun <formsynergy@gmail.com>
  * @copyright  2019 FormSynergy.com
@@ -17,7 +18,7 @@ namespace FormSynergy;
 /**
  * Fs class
  * 
- * @version 1.5.0.3
+ * @version 1.5.0.4
  * 
  */
 class Fs
@@ -25,7 +26,7 @@ class Fs
     /**
 	 * FormSynergy version constant.
 	 */
-	const FORMSYNERGY_VERSION = '1.5.0.3';
+	const FORMSYNERGY_VERSION = '1.5.0.4';
 
     /**
      * self::$config 
@@ -199,7 +200,7 @@ class Fs
      */
     public static function Resource($package)
     {
-        $resource = new \File_Storage($package, self::$storage);
+        $resource = new File_Storage($package, self::$storage);
         return $resource;
     }
  
@@ -738,7 +739,6 @@ class Client
      */
     public function Verify()
     {
-        $this->_transmit();
         $this->options([
             'method' => 'PUT',
             'envelope' => 'verify',
@@ -747,6 +747,7 @@ class Client
                 'objid' => $this->rel('objid'),
             ],
         ]);
+        $this->_transmit();
         return $this;
     }
 
@@ -760,16 +761,15 @@ class Client
      */
     public function Scan()
     {
-        $this->_transmit();
         $this->options([
             'method' => 'PUT',
             'envelope' => 'scan',
             'request' => [
                 'scan' => true,
-                'objid' => $this->rel('objid'),
             ],
+            'objid' => $this->rel('objid'),
         ]);
-
+        $this->_transmit();
         return $this;
     }
  
