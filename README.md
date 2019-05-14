@@ -34,8 +34,6 @@ If you are a reseller
 - $resellerid = '';
 
 
-
-
 ## Configuration
 ```PHP
 FS::Config([
@@ -44,7 +42,6 @@ FS::Config([
     'endpoint' => 'api.formsynergy.com',
     'apikey' => $apikey,
     'secretkey' => $secretkey,
-     //'resellerid' => $resellerid,  If you are a reseller
     'max_auth_count' => 15,
 ]);
 ```
@@ -60,31 +57,32 @@ Load and start managing an account.
 ```PHP
 $api = FS::Api()->Load($profileid);
 ```
-## Add a domain
 
+## Add a domain
 ```PHP
-// Adding a website
 $api->Create('website')
     ->Attributes([
         'name' => 'MyWebsite',
         'domain' => 'example.website.ltd',
-        'proto' => 'https'
+        'proto' => 'https://'
     ])
     ->As('website');
 ```
+
+## Meta tag
+Add the site id meta tag as follow
 ```PHP
-// Next verify domain ownership, with a meta tag.
+<meta name="fs:siteid" content="<?php echo $api->_website('siteid');?>">
+```  
 
-// Add the meta tag
-<meta name="FS:siteid" content="<?php echo $api->_website('siteid');?>">
-
-// Create a verification request
+## Verify
+```PHP
 $api->Get('website')
     ->Where([
         'siteid' => $api->_website('siteid')
     ])
     ->verify();
-```    
+```  
 
 ## Create a strategy
 A strategy is composed of modules and objectives.
@@ -96,7 +94,6 @@ $api->Create('strategy')
     ])
     ->As('defaultStrategy');
 ```
-
 
 ## Creating modules
 Modules are bundles composed of a subject, body and form inputs. Each module can be customized to handle events and responses individually. Modules can be chain linked together to create contiuous interactions. <a href="https://formsynergy.com/documentation/modules/">API documentation</a>
