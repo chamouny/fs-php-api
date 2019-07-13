@@ -18,7 +18,7 @@ namespace FormSynergy;
 /**
  * Fs class
  * 
- * @version 1.5.0.4
+ * @version 1.6.0.0
  * 
  */
 class Fs
@@ -26,7 +26,7 @@ class Fs
     /**
 	 * FormSynergy version constant.
 	 */
-	const FORMSYNERGY_VERSION = '1.5.0.4';
+	const FORMSYNERGY_VERSION = '1.6.0.0';
 
     /**
      * self::$config 
@@ -617,12 +617,15 @@ class Client
      */
     public function Create($resource)
     {
-        $this->options([
+        $options = [
             'resource' => $resource,
             'method' => 'POST',
             'envelope' => 'create',
-        ]);
-
+        ];
+        if('access' == $resource) {
+            $options['request']['create']['objid'] = $this->rel('objid');
+        }
+        $this->options($options);
         return $this;
     }
 
