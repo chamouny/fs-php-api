@@ -24,7 +24,7 @@ use \FormSynergy\Fs as FS;
 
 You will need to retrieve your credentials in the Form Synergy console.
 
-Console Access: https://formsynergy.com/console/
+Form Synergy Website: https://formsynergy.com/
 
 - $profileid = '';
 - $apikey = '';
