@@ -18,7 +18,7 @@ namespace FormSynergy;
 /**
  * Fs class
  * 
- * @version 1.6.0.0
+ * @version 1.6.0.1
  * 
  */
 class Fs
@@ -26,7 +26,7 @@ class Fs
     /**
 	 * FormSynergy version constant.
 	 */
-	const FORMSYNERGY_VERSION = '1.6.0.0';
+	const FORMSYNERGY_VERSION = '1.6.0.1';
 
     /**
      * self::$config 
@@ -60,6 +60,18 @@ class Fs
      * @var string $profileid
      */
     public static $profileid;
+
+
+    /**
+     * self::$accessid
+     * 
+     * Unique access id to manage lead boards.
+     * 
+     * 
+     * @visibility public static
+     * @var string $accessid
+     */
+    public static $accessid;
 
     /**
      * self::$storage
@@ -111,6 +123,35 @@ class Fs
             self::$profileid = $profileid;
         }
         return self::$profileid;
+    }
+
+    /**
+     * Access()
+     * 
+     * Set the accessid, a new access id can be set to set a different accessid.
+     * Please note: This accessid must be the managing / account accessid.
+     * In order to retrieve the account accessid, use the following:
+     *  $api->Get('consoleaccess')
+     *      ->Where([
+     *          'profileid' => $profileid
+     *      ])->As('profile');
+     * 
+     *      $accessid = $api->_profile('accessid');
+     * 
+     * 
+     * @visibility public static
+     * @uses self::$accessid
+     * @return void
+     */
+    public static function Access($accessid = null)
+    {
+        if( !self::$accessid && is_null($accessid)) {
+            throw new FsException('In order to return the access id, it must be defined first.');
+        }
+        if(!is_null($accessid)) {
+            self::$accessid = $accessid;
+        }
+        return self::$accessid;
     }
     
     /**
@@ -228,6 +269,9 @@ class Fs
             }
             if (isset(self::$profileid)) {
                 $api->Load(self::$profileid);
+            }
+            if (isset(self::$accessid)) {
+                $api->Access(self::$accessid);
             }
             return $api;
         }
@@ -438,6 +482,29 @@ class Client
             'request' => [
                 'load' => [
                     'profileid' => $profileid,
+                ],
+            ],
+        ]);
+
+        return $this;
+    }
+
+    /**
+     * Access()
+     *
+     * Will set the access id associated with an account in order to manage lead boards.
+     *
+     * @visibility public
+     * @uses Api::options()
+     * @param string $accessid
+     * @return self
+     */
+    public function Access($accessid)
+    {
+        $this->options([
+            'request' => [
+                'load' => [
+                    'accessid' => $accessid,
                 ],
             ],
         ]);
